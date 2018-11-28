@@ -14,7 +14,7 @@ The newtonprop Python package
 .. image:: https://ci.appveyor.com/api/projects/status/vf9vb3k6dqee1oad?svg=true
    :alt: AppVeyor Continuous Integration
    :target: https://ci.appveyor.com/project/goerz/newtonprop
-.. image:: https://img.shields.io/coveralls/github/qucontrol/newtonprop/badge.svg?branch=master
+.. image:: https://img.shields.io/coveralls/github/qucontrol/newtonprop/master.svg
    :alt: Coveralls
    :target: https://coveralls.io/github/qucontrol/newtonprop?branch=master
 .. image:: https://readthedocs.org/projects/newtonprop/badge/?version=latest
