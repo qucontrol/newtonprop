@@ -7,7 +7,7 @@ conda:
 build:
     image: latest
 python:
-   version: 3.7
+   version: 3.6
    # Note that pip_install is buggy, but setup_py_install will not take into
    # account any dependencies from setup.py. *All* dependencies must be
    # declared in docs/rtd_environment.yml
