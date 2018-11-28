@@ -1,0 +1,10 @@
+name: binder
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.7
+  - pip:
+    - matplotlib
+    - watermark
+    - git+https://github.com/qucontrol/newtonprop.git@master#egg=newtonprop
