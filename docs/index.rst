@@ -7,13 +7,12 @@ Welcome to the newtonprop's Python package's documentation!
 .. image:: https://img.shields.io/pypi/v/newtonprop.svg
    :alt: newtonprop on the Python Package Index
    :target: https://pypi.python.org/pypi/newtonprop
-
 .. image:: https://img.shields.io/travis/qucontrol/newtonprop.svg
    :alt: Travis Continuous Integration
    :target: https://travis-ci.org/qucontrol/newtonprop
-.. image:: https://img.shields.io/badge/appveyor-no%20id-red.svg
+.. image:: https://ci.appveyor.com/api/projects/status/vf9vb3k6dqee1oad?svg=true
    :alt: AppVeyor Continuous Integration
-   :target: https://ci.appveyor.com/project/qucontrol/newtonprop
+   :target: https://ci.appveyor.com/project/goerz/newtonprop
 .. image:: https://img.shields.io/coveralls/github/qucontrol/newtonprop/badge.svg?branch=master
    :alt: Coveralls
    :target: https://coveralls.io/github/qucontrol/newtonprop?branch=master
