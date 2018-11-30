@@ -33,7 +33,7 @@ dev_requirements = [
 dev_requirements.append('better-apidoc')
 
 dev_requirements.extend([
-    'jupyter', 'nbval', 'nbsphinx', 'watermark'])
+    'jupyter', 'nbval', 'nbsphinx', 'watermark', 'matplotlib'])
 
 
 version = get_version('./src/newtonprop/__init__.py')
