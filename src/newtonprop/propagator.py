@@ -37,14 +37,15 @@ def _arnoldi(A, dt, v0, m_max, inner=np.vdot, norm=np.linalg.norm):
     beta = norm(v0)
     if (abs(beta-1.0) > 1.0e-10):
         print("beta = ", beta)
-        raise AssertionError("v0 must have norm 1.0")
+        raise AssertionError(
+            "v0 must have norm 1.0. Mismatch between `inner` and `norm`?")
     v = v0 / beta
     arnoldi_vecs.append(v)
     for j in range(m):
         v = A(v)  # v_{j+1}
         for i, v_i in enumerate(arnoldi_vecs):
             Hess[i, j] = dt * inner(v_i, v)
-            v = v - np.dot((Hess[i, j]/dt), v_i)
+            v = v - (Hess[i, j]/dt) * v_i
         # At this point, we have finished the (j+1) x (j+1) Hessenberg matrix
         Ritz.extend(np.linalg.eigvals(Hess[:j+1, :j+1]))
         h_next = norm(v)
@@ -253,7 +254,8 @@ def step(
 
     for s in range(maxrestart):
 
-        arnoldi_vecs, Hess, Ritz, m = _arnoldi(A, dt, v, m_max)
+        arnoldi_vecs, Hess, Ritz, m = _arnoldi(
+            A, dt, v, m_max, inner=inner, norm=norm)
         if m < m_max:
             logger.warn("Arnoldi only returned order %d instead of the "
                         "requested %d", m, m_max)
@@ -291,7 +293,7 @@ def step(
 
         # starting vector for next iteration
         R = (np.dot(Hess, R) - Z[n_s+m-1] * R) / radius
-        beta = norm(R)
+        beta = np.linalg.norm(R)
         R /= beta
         # beta would be the norm of v, with the above normalization, v will now
         # be normalized
@@ -300,12 +302,14 @@ def step(
             v += R[i, 0] * arnoldi_vecs[i]
 
         if (beta*abs(a[-1])/(1+norm(w)) < tol):
-            logger.debug("Converged at restart %s", s)
-            logger.debug("norm of wp     : %s", norm(wp))
-            logger.debug("norm of w      : %s", norm(w))
-            logger.debug("beta           : %s", beta)
-            logger.debug("|R*a[-1]|/|w|  : %s", norm(R) * a[-1] / norm(w))
-            logger.debug("max Leja radius: %s", np.max(np.abs(Z)))
+            if logging.getLogger().isEnabledFor(logging.DEBUG):
+                logger.debug("Converged at restart %s", s)
+                logger.debug("norm of wp     : %s", norm(wp))
+                logger.debug("norm of w      : %s", norm(w))
+                logger.debug("beta           : %s", beta)
+                logger.debug(
+                    "|R*a[-1]|/|w|  : %s", np.linalg.norm(R) * a[-1] / norm(w))
+                logger.debug("max Leja radius: %s", np.max(np.abs(Z)))
             break
 
         try:
