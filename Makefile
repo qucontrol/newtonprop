@@ -85,7 +85,7 @@ test36: .venv/py36/bin/py.test ## run tests for Python 3.6
 	@.venv/py37/bin/pip install -e .[dev]
 
 test37: .venv/py37/bin/py.test ## run tests for Python 3.7
-	$(TESTENV) $< -v $(TESTOPTIONS) $(TESTS)
+	$(TESTENV) $< -v $(TESTOPTIONS) src tests docs/*.rst
 .venv/py37/bin/sphinx-build: .venv/py37/bin/py.test
 
 docs: .venv/py36/bin/sphinx-build ## generate Sphinx HTML documentation, including API docs
@@ -134,7 +134,7 @@ develop-docs: develop  ## generate Sphinx HTML documentation, including API docs
 # How to execute notebook files
 %.ipynb.log: %.ipynb .venv/py36/bin/jupyter
 	@echo ""
-	@.venv/py36/bin/jupyter nbconvert --to notebook --execute --inplace --allow-errors --ExecutePreprocessor.kernel_name='python3' --config=/dev/null $< 2>&1 | tee $@
+	@.venv/py36/bin/jupyter nbconvert --to notebook --execute --inplace --allow-errors --ExecutePreprocessor.timeout=300 --ExecutePreprocessor.kernel_name='python3' --config=/dev/null $< 2>&1 | tee $@
 
 NOTEBOOKFILES = $(shell find docs/ -iname '*.ipynb'  -maxdepth 1)
 NOTEBOOKLOGS = $(patsubst %.ipynb,%.ipynb.log,$(NOTEBOOKFILES))

@@ -19,6 +19,7 @@ install:
   - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION 
   - conda activate test_env
   - conda config --append channels conda-forge
+  - conda install qutip
   - pip install -e .[dev]
   - pip freeze
   - pip install coveralls
