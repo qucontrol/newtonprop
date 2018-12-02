@@ -3,9 +3,11 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.7
+  - python=3.6
+  - qutip
   - pip:
-    - sphinx-autodoc-typehints
-    - gitpython
-    - better-apidoc
+    - better-apidoc>=0.2.0
+    - sphinx_autodoc_typehints
+    - sphinxcontrib-bibtex
     - nbsphinx
+    - gitpython
