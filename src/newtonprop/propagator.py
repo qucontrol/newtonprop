@@ -302,7 +302,7 @@ def step(
             v += R[i, 0] * arnoldi_vecs[i]
 
         if (beta*abs(a[-1])/(1+norm(w)) < tol):
-            if logging.getLogger().isEnabledFor(logging.DEBUG):
+            if logger.isEnabledFor(logging.DEBUG):  # pragma: nocover
                 logger.debug("Converged at restart %s", s)
                 logger.debug("norm of wp     : %s", norm(wp))
                 logger.debug("norm of w      : %s", norm(w))
