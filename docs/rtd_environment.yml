@@ -4,7 +4,6 @@ channels:
   - conda-forge
 dependencies:
   - python=3.6
-  - qutip
   - pip:
     - better-apidoc>=0.2.0
     - sphinx_autodoc_typehints

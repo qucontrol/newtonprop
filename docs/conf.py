@@ -55,13 +55,12 @@ extensions = [
     'sphinx.ext.extlinks',
     'sphinx.ext.ifconfig',
     'sphinx.ext.todo',
-    'sphinx.ext.inheritance_diagram',
     'dollarmath',
+    'nbsphinx',
+    'sphinx.ext.inheritance_diagram',
     'sphinx_autodoc_typehints',
+    'sphinxcontrib.bibtex',
 ]
-
-extensions.append('nbsphinx')
-
 
 if os.getenv('SPELLCHECK'):
     extensions += 'sphinxcontrib.spelling',
@@ -76,6 +75,7 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'matplotlib': ('https://matplotlib.org/', None),
+    'qutip': ('http://qutip.org/docs/latest/', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -127,6 +127,8 @@ mathjax_config = {
             'diag': ['{\\operatorname{diag}}', 0],
             'abs': ['{\\operatorname{abs}}', 0],
             'pop': ['{\\operatorname{pop}}', 0],
+            'ee': ['{\\text{e}}', 0],
+            'ii': ['{\\text{i}}', 0],
             'aux': ['{\\text{aux}}', 0],
             'opt': ['{\\text{opt}}', 0],
             'tgt': ['{\\text{tgt}}', 0],
@@ -154,6 +156,9 @@ mathjax_config = {
             'AbsSq': ['{\\left\\vert#1\\right\\vert^2}', 1],
             'Re': ['{\\operatorname{Re}}', 0],
             'Im': ['{\\operatorname{Im}}', 0],
+            'Real': ['{\\mathbb{R}}', 0],
+            'Complex': ['{\\mathbb{C}}', 0],
+            'Integer': ['{\\mathbb{N}}', 0],
         }
     }
 }

@@ -31,6 +31,7 @@ Welcome to the newtonprop's Python package's documentation!
    contributing
    authors
    history
+   newton
    example.ipynb
 
 

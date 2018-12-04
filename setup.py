@@ -29,11 +29,11 @@ requirements = ['numpy']
 dev_requirements = [
     'coverage', 'pytest', 'pytest-cov', 'pytest-xdist', 'twine', 'pep8',
     'flake8', 'wheel', 'sphinx', 'sphinx-autobuild', 'sphinx_rtd_theme',
-    'sphinx-autodoc-typehints', 'gitpython', ]
+    'sphinx-autodoc-typehints', 'gitpython', 'sphinxcontrib-bibtex',
+    'jupyter', 'nbval', 'nbsphinx', 'watermark', 'matplotlib',
+]
 dev_requirements.append('better-apidoc')
 
-dev_requirements.extend([
-    'jupyter', 'nbval', 'nbsphinx', 'watermark', 'matplotlib'])
 
 
 version = get_version('./src/newtonprop/__init__.py')

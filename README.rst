@@ -26,15 +26,33 @@ The newtonprop Python package
 
 Pure Python reference implementation of the Newton propagator for quantum dynamics.
 
-Development of `newtonprop` happens on `Github`_.
+The Newton propagator evaluates an expansion of the time evolution operator
+:math:`e^{-i \Op{H} dt}` or :math:`e^{\Liouville dt}` in Newton polynomials,
+using an implicitly restarted Arnoldi scheme. More generally, it can evaluate
+the application of any operator-valued function to a state.
+
+Development of the ``newtonprop`` package happens on `Github`_.
 You can read the full documentation at `ReadTheDocs`_.
+
+.. Warning::
+
+    This is a reference implementation only. It aims to be easy to understand,
+    so that that it can guide the implementation of the algorithm in a compiled
+    language, and to provide a baseline against which to test such an
+    implementation. Being written in pure Python, it runs several orders of
+    magnitude slower than an implementation in a compiled language. Thus, it
+    cannot compete e.g. with the `ODE solvers provided by SciPy`_ (which run at
+    C speed), even though the Newton propagator is usually expected to be
+    superior in runtime, memory usage, and precision.
 
 
 .. _ReadTheDocs: https://newtonprop.readthedocs.io/en/latest/
+.. _ODE solvers provided by SciPy: https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.integrate.ode.html
 
 
 Installation
 ------------
+
 To install the latest released version of ``newtonprop``, run this command in your terminal:
 
 .. code-block:: console
@@ -43,14 +61,14 @@ To install the latest released version of ``newtonprop``, run this command in yo
 
 This is the preferred method to install ``newtonprop``, as it will always install the most recent stable release.
 
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
+If you don't have `pip`_ installed, the `Python installation guide`_ can guide
 you through the process.
 
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
-To install the latest development version of ``newtonprop`` from `Github`_.
+To install the latest development version of ``newtonprop`` from `Github`_:
 
 .. code-block:: console
 

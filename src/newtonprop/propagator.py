@@ -2,7 +2,7 @@
 import logging
 import numpy as np
 
-__all__ = ['step']
+__all__ = ["step"]
 
 
 def _arnoldi(A, dt, v0, m_max, inner=np.vdot, norm=np.linalg.norm):
@@ -27,7 +27,9 @@ def _arnoldi(A, dt, v0, m_max, inner=np.vdot, norm=np.linalg.norm):
     m = m_max
 
     # Hessenberg matrix (at maximum size)
-    Hess = np.matrix(np.zeros(shape=(m_max+1, m_max+1), dtype=np.complex128))
+    Hess = np.matrix(
+        np.zeros(shape=(m_max + 1, m_max + 1), dtype=np.complex128)
+    )
 
     # Eigenvalues of all Hess
     Ritz = []
@@ -35,21 +37,22 @@ def _arnoldi(A, dt, v0, m_max, inner=np.vdot, norm=np.linalg.norm):
     arnoldi_vecs = []
 
     beta = norm(v0)
-    if (abs(beta-1.0) > 1.0e-10):
+    if abs(beta - 1.0) > 1.0e-10:
         print("beta = ", beta)
         raise AssertionError(
-            "v0 must have norm 1.0. Mismatch between `inner` and `norm`?")
+            "v0 must have norm 1.0. Mismatch between `inner` and `norm`?"
+        )
     v = v0 / beta
     arnoldi_vecs.append(v)
     for j in range(m):
         v = A(v)  # v_{j+1}
         for i, v_i in enumerate(arnoldi_vecs):
             Hess[i, j] = dt * inner(v_i, v)
-            v = v - (Hess[i, j]/dt) * v_i
+            v = v - (Hess[i, j] / dt) * v_i
         # At this point, we have finished the (j+1) x (j+1) Hessenberg matrix
-        Ritz.extend(np.linalg.eigvals(Hess[:j+1, :j+1]))
+        Ritz.extend(np.linalg.eigvals(Hess[: j + 1, : j + 1]))
         h_next = norm(v)
-        Hess[j+1, j] = h_next * dt
+        Hess[j + 1, j] = h_next * dt
         if h_next <= 1.0e-14:  # abort early at convergence
             m = j
             break
@@ -57,7 +60,7 @@ def _arnoldi(A, dt, v0, m_max, inner=np.vdot, norm=np.linalg.norm):
         arnoldi_vecs.append(v)
     # At this point, arnoldi_vecs contains m+1 elements
     Ritz = np.array(Ritz, dtype=np.complex128)
-    return arnoldi_vecs, Hess[:m+1, :m+1], Ritz, m
+    return arnoldi_vecs, Hess[: m + 1, : m + 1], Ritz, m
 
 
 def _normalize_points(z):
@@ -70,7 +73,7 @@ def _normalize_points(z):
     # we need to enlarge the radius a little bit to account for points that
     # will be added in later iterations
     r *= 1.2  # arbitary factor
-    assert(r > 0.0), "Radius is zero"
+    assert r > 0.0, "Radius is zero"
     return r
 
 
@@ -80,7 +83,7 @@ def _extend_newton_coeffs(func, old_a, new_leja, center, radius):
     """
     n_old = len(old_a)
     m = len(new_leja) - n_old
-    a = np.zeros(n_old+m, dtype=np.complex128)
+    a = np.zeros(n_old + m, dtype=np.complex128)
     a[:n_old] = old_a
     n0 = n_old
 
@@ -88,16 +91,16 @@ def _extend_newton_coeffs(func, old_a, new_leja, center, radius):
         a[0] = func(new_leja[0])
         n0 = 1
 
-    for k in range(n0, n_old+m):
+    for k in range(n0, n_old + m):
         d = 1.0
         pn = 0.0
         for n in range(1, k):  # 1..k-1
-            zd = new_leja[k] - new_leja[n-1]
+            zd = new_leja[k] - new_leja[n - 1]
             d *= zd / radius
             pn += a[n] * d
-        zd = new_leja[k] - new_leja[k-1]
+        zd = new_leja[k] - new_leja[k - 1]
         d *= zd / radius
-        assert(abs(d) > 1.0e-200), "Divided differences too small"
+        assert abs(d) > 1.0e-200, "Divided differences too small"
         a[k] = (func(new_leja[k]) - a[0] - pn) / d
     return a
 
@@ -113,8 +116,8 @@ def _extend_leja(old_leja, new_points, n_use):
     if n_old == 0:
         # At the very beginning, start with the point that has largest absolute
         # value
-        for i in range(len(new_points)-1):  # 0 .. n_old - 2
-            if (abs(new_points[i]) > abs(new_points[-1])):
+        for i in range(len(new_points) - 1):  # 0 .. n_old - 2
+            if abs(new_points[i]) > abs(new_points[-1]):
                 temp = new_points[i]
                 new_points[i] = new_points[-1]
                 new_points[-1] = temp
@@ -122,32 +125,41 @@ def _extend_leja(old_leja, new_points, n_use):
         i_add_start = 1
     # find the best point for new_leja[n_old+n]
     n_added = i_add_start
-    ex = 1.0/(n_old + n_use)
+    ex = 1.0 / (n_old + n_use)
     for i_add in range(i_add_start, n_use):
         p_max = 0.0
         i_max = 0
         # the new leja are defined with index  0 .. (n_old-1)+n
         # the new candidates are defined with index 0 .. len(new_points)-1+n
-        for i in range(len(new_points)-i_add):  # trial points (candidates)
+        for i in range(len(new_points) - i_add):  # trial points (candidates)
             p = 1.0
             for j in range(n_old + i_add):  # existing leja points
-                p *= np.abs(new_points[i] - new_leja[j])**ex
+                p *= np.abs(new_points[i] - new_leja[j]) ** ex
             # at this point p is the divided difference denominator for the
             # candidate with index i
             if p > p_max:
                 p_max = p
                 i_max = i
         # XXX if p_max below limit: abort
-        new_leja[n_old+i_add] = new_points[i_max]
+        new_leja[n_old + i_add] = new_points[i_max]
         n_added += 1
         # remove the used point by moving in the last point
-        new_points[i_max] = new_points[len(new_points)-1-i_add]
+        new_points[i_max] = new_points[len(new_points) - 1 - i_add]
     return new_leja, n_added
 
 
 def step(
-        A, v, dt, func=None, m_max=10, maxrestart=100, tol=1e-12,
-        inner=None, norm=None, zero=None):
+    A,
+    v,
+    dt,
+    func=None,
+    m_max=10,
+    maxrestart=100,
+    tol=1e-12,
+    inner=None,
+    norm=None,
+    zero=None,
+):
     r"""Evaluate $f(A\,dt)\,v$, for example $e^{-i\,A\,dt}\,v$ for the
     propagation of a quantum state.
 
@@ -213,8 +225,11 @@ def step(
         Mathematically, `state` must be an element a Hilbert space (a "complete
         inner product space"). This includes density matrices, which can be
         interpreted as elements of a Hilbert space provided one chooses an
-        appropriate norm and inner product. The norm *must* be the one
-        induced by the inner product,
+        appropriate norm and inner product.
+
+    .. Warning::
+        
+        The norm *must* be the one induced by the inner product,
 
         .. math::
 
@@ -226,9 +241,12 @@ def step(
         product. If the operator norm is used, density matrices are not
         elements of a Hilbert space, but of a C* algebra, which would not allow
         for the evaluation of the propagator.
+
+        A mismatch between `norm` and `inner` leads to subtle errors that will
+        not be obvious (e.g., a substantial lack of precision)
     """
 
-    logger = logging.getLogger('newton')
+    logger = logging.getLogger("newton")
 
     if inner is None:
         inner = np.vdot
@@ -241,13 +259,13 @@ def step(
 
     try:
         N = np.prod(v.shape)
-        assert(m_max <= N), "m_max must be smaller than the system dimension"
+        assert m_max <= N, "m_max must be smaller than the system dimension"
     except AttributeError:
         pass
 
-    w = zero(v)                                    # result vector
-    Z = np.zeros(0, dtype=np.complex128)               # Leja points
-    a = np.zeros(0, dtype=np.complex128)               # Newton coeffs
+    w = zero(v)  # result vector
+    Z = np.zeros(0, dtype=np.complex128)  # Leja points
+    a = np.zeros(0, dtype=np.complex128)  # Newton coeffs
 
     beta = norm(v)
     v = v / beta
@@ -255,10 +273,15 @@ def step(
     for s in range(maxrestart):
 
         arnoldi_vecs, Hess, Ritz, m = _arnoldi(
-            A, dt, v, m_max, inner=inner, norm=norm)
+            A, dt, v, m_max, inner=inner, norm=norm
+        )
         if m < m_max:
-            logger.warn("Arnoldi only returned order %d instead of the "
-                        "requested %d", m, m_max)
+            logger.warn(
+                "Arnoldi only returned order %d instead of the "
+                "requested %d",
+                m,
+                m_max,
+            )
         if m == 0 and s == 0:
             # The input state appears to be an eigenstate
             eig_val = beta * Hess[0, 0]
@@ -270,20 +293,20 @@ def step(
         if s == 0:
             radius = _normalize_points(Ritz)
             center = 0.0
-        assert(radius > 0.0), "Radius is zero"
+        assert radius > 0.0, "Radius is zero"
 
         # get Leja points (i.e. Ritz points in the proper order)
         n_s = len(Z)
         Z, m = _extend_leja(Z, Ritz, m)  # Z now contains m new Leja points
-        assert(m > 0), "No new Leja points"
+        assert m > 0, "No new Leja points"
         a = _extend_newton_coeffs(func, a, Z, center, radius)
 
-        R = np.matrix(np.zeros(shape=(m+1, 1), dtype=np.complex128))
+        R = np.matrix(np.zeros(shape=(m + 1, 1), dtype=np.complex128))
         R[0, 0] = beta
         P = a[n_s] * R
         for k in range(1, m):  # 1..m-1
-            R = (np.dot(Hess, R) - Z[n_s+k-1] * R) / radius
-            P += a[n_s+k] * R
+            R = (np.dot(Hess, R) - Z[n_s + k - 1] * R) / radius
+            P += a[n_s + k] * R
 
         wp = zero(v)
         for i in range(m):  # 0 .. m-1
@@ -292,29 +315,30 @@ def step(
         w += wp
 
         # starting vector for next iteration
-        R = (np.dot(Hess, R) - Z[n_s+m-1] * R) / radius
+        R = (np.dot(Hess, R) - Z[n_s + m - 1] * R) / radius
         beta = np.linalg.norm(R)
         R /= beta
         # beta would be the norm of v, with the above normalization, v will now
         # be normalized
         v = zero(v)
-        for i in range(m+1):  # 0 .. m
+        for i in range(m + 1):  # 0 .. m
             v += R[i, 0] * arnoldi_vecs[i]
 
-        if (beta*abs(a[-1])/(1+norm(w)) < tol):
+        if beta * abs(a[-1]) / (1 + norm(w)) < tol:
             if logger.isEnabledFor(logging.DEBUG):  # pragma: nocover
                 logger.debug("Converged at restart %s", s)
                 logger.debug("norm of wp     : %s", norm(wp))
                 logger.debug("norm of w      : %s", norm(w))
                 logger.debug("beta           : %s", beta)
                 logger.debug(
-                    "|R*a[-1]|/|w|  : %s", np.linalg.norm(R) * a[-1] / norm(w))
+                    "|R*a[-1]|/|w|  : %s", np.linalg.norm(R) * a[-1] / norm(w)
+                )
                 logger.debug("max Leja radius: %s", np.max(np.abs(Z)))
             break
 
         try:
-            assert(not np.isnan(np.sum(v))), "v contains NaN"
-            assert(not np.isnan(np.sum(w))), "w contains NaN"
+            assert not np.isnan(np.sum(v)), "v contains NaN"
+            assert not np.isnan(np.sum(w)), "w contains NaN"
         except (AttributeError, TypeError):
             pass
 

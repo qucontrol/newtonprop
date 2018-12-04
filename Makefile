@@ -86,7 +86,8 @@ test36: .venv/py36/bin/py.test ## run tests for Python 3.6
 
 test37: .venv/py37/bin/py.test ## run tests for Python 3.7
 	$(TESTENV) $< -v $(TESTOPTIONS) src tests docs/*.rst
-.venv/py37/bin/sphinx-build: .venv/py37/bin/py.test
+
+.venv/py36/bin/sphinx-build: .venv/py36/bin/py.test
 
 docs: .venv/py36/bin/sphinx-build ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs SPHINXBUILD=../.venv/py36/bin/sphinx-build clean
