@@ -77,6 +77,18 @@ def _normalize_points(z):
     return r
 
 
+def _expmi(x):
+    return np.exp(-1j * x)
+
+
+def _exppi(x):
+    return np.exp(1j * x)
+
+
+def _exp(x):
+    return np.exp(x)
+
+
 def _extend_newton_coeffs(func, old_a, new_leja, center, radius):
     """Extend a set of Newton coefficients, by using a set of new_leja points
     which are normalized with the given center and radius
@@ -152,7 +164,7 @@ def step(
     A,
     v,
     dt,
-    func=None,
+    func='exp',
     m_max=10,
     maxrestart=100,
     tol=1e-12,
@@ -185,13 +197,17 @@ def step(
             ``A(v)`` must return the result of applying $A$ to $v$.
         v: Initial state $v$.
         dt (float): scalar parameter (time step :math:`dt`)
-        func (callable): The scalar version of the operator-function $f$ to be
-            evaluated, and the result applied to state. Must take one complex
-            argument and return a complex value. If None, defaults to
-            ``lambda x: numpy.exp(-1j * x)``, that is the function for the
-            quantum-mechanical time evolution operator. Note that `func` will
-            only ever be called with a scalar argument, not with the argument
-            $(A\,dt)$.
+        func (callable or str): The scalar version of the operator-function $f$
+            to be evaluated. Must take one complex argument and return a
+            complex value. Note that `func` will only ever be called with a
+            scalar argument, not with the argument $(A\,dt)$.
+            If passed as a string, `func` may have the following values,
+            corresponding to "standard" functions:
+
+            * ``'exp'``: ``lambda x: np.exp(x)``
+            * ``'expmi'``: ``lambda x: np.exp(-1j * x)``
+            * ``'expi'``: ``lambda x: np.exp(1j * x)``
+
         m_max (int): Maximal Krylov dimension.
         maxrestart (int): Maximal number of Newton restarts (iterations of the
             algorithm)
@@ -228,7 +244,7 @@ def step(
         appropriate norm and inner product.
 
     .. Warning::
-        
+
         The norm *must* be the one induced by the inner product,
 
         .. math::
@@ -250,12 +266,20 @@ def step(
 
     if inner is None:
         inner = np.vdot
-    if norm is None:
-        norm = np.linalg.norm
-    if func is None:
-        func = lambda x: np.exp(-1j * x)
+        if norm is None:
+            norm = np.linalg.norm
+    else:
+        if norm is None:
+            norm = lambda v: np.sqrt(inner(v, v))
     if zero is None:
         zero = lambda v: np.zeros(shape=v.shape, dtype=v.dtype)
+    funcs = {
+        'exp': _exp,
+        'expmi': _expmi,
+        'expi': _exppi,
+    }
+    if isinstance(func, str):
+        func = funcs[func]
 
     try:
         N = np.prod(v.shape)
