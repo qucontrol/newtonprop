@@ -2,6 +2,24 @@
 import logging
 import numpy as np
 
+try:
+
+    from numba import jit
+    # the the user-supplied `A` is efficient (runs in compiled code), some
+    # parts of the Newton algorithm (especially _extend_leja) can become
+    # signficant. In this case, compiling those parts of the Newton propagation
+    # with number can get something like an extra factor 4 in speed.
+
+except ImportError:  # pragma: nocover
+
+    def jit(*args, **kwargs):
+
+        def _noop_decorator(func):
+            return func
+
+        return _noop_decorator
+
+
 __all__ = ["step"]
 
 
@@ -77,18 +95,22 @@ def _normalize_points(z):
     return r
 
 
+@jit(nopython=True)
 def _expmi(x):
     return np.exp(-1j * x)
 
 
+@jit(nopython=True)
 def _exppi(x):
     return np.exp(1j * x)
 
 
+@jit(nopython=True)
 def _exp(x):
     return np.exp(x)
 
 
+@jit()
 def _extend_newton_coeffs(func, old_a, new_leja, center, radius):
     """Extend a set of Newton coefficients, by using a set of new_leja points
     which are normalized with the given center and radius
@@ -117,6 +139,7 @@ def _extend_newton_coeffs(func, old_a, new_leja, center, radius):
     return a
 
 
+@jit(nopython=True)
 def _extend_leja(old_leja, new_points, n_use):
     """Given a set of normalized (ordered) Leja points, extract `n_use` points
     from the (normalized) new_points, and append them to the set of leja points
@@ -249,7 +272,7 @@ def step(
 
         .. math::
 
-            \Norm{v} \equiv \sqrt{\AbsSq{\Braket{v}{v}}}
+            \Norm{v} \equiv \sqrt{\Braket{v}{v}}
 
         The parameters `inner` and `norm` must fulfill this definition.
         For density matrices, they should be the Hilbert-Schmidt product and
@@ -270,7 +293,7 @@ def step(
             norm = np.linalg.norm
     else:
         if norm is None:
-            norm = lambda v: np.sqrt(inner(v, v))
+            norm = lambda v: np.sqrt(np.abs(inner(v, v)))
     if zero is None:
         zero = lambda v: np.zeros(shape=v.shape, dtype=v.dtype)
     funcs = {

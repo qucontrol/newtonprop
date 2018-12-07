@@ -4,7 +4,7 @@ CONDA_PACKAGES = qutip
 TESTENV =
 #TESTENV = MATPLOTLIBRC=tests
 TESTOPTIONS = --doctest-modules --cov=newtonprop --nbval --sanitize-with docs/nbval_sanitize.cfg
-TESTS = src tests docs/*.rst docs/*.ipynb
+TESTS = src tests docs/*.rst docs/example.ipynb
 
 
 define PRINT_HELP_PYSCRIPT
@@ -53,7 +53,7 @@ pep8: ## check style with pep8
 	pep8 src tests
 
 
-test:  test35 test36 test37 ## run tests on every Python version
+test:  test35 test36 ## run tests on every Python version
 
 .venv/py34/bin/py.test:
 	@conda create -y -m -p .venv/py34 python=3.4
@@ -98,7 +98,8 @@ spellcheck: .venv/py36/bin/sphinx-build ## check spelling in docs
 	@.venv/py36/bin/pip install sphinxcontrib-spelling
 	SPELLCHECK=en_US $(MAKE) -C docs SPHINXBUILD=../.venv/py36/bin/sphinx-build spelling
 
-coverage: test36  ## generate coverage report in ./htmlcov
+coverage: .venv/py36/bin/py.test  ## generate coverage report in ./htmlcov
+	NUMBA_DISABLE_JIT=1 $(TESTENV) $< -v $(TESTOPTIONS) $(TESTS)
 	.venv/py36/bin/coverage html
 	@echo "open htmlcov/index.html"
 
@@ -143,7 +144,7 @@ NOTEBOOKLOGS = $(patsubst %.ipynb,%.ipynb.log,$(NOTEBOOKFILES))
 notebooks: $(NOTEBOOKLOGS)  ## re-evaluate the notebooks
 	@echo ""
 	@echo "All notebook are now up to date; the were executed using the python3 kernel"
-	@.venv/py37/bin/jupyter kernelspec list | grep python3
+	@.venv/py36/bin/jupyter kernelspec list | grep python3
 
 jupyter-notebook: .venv/py36/bin/jupyter  ## run a notebook server for editing the examples
 	.venv/py36/bin/jupyter notebook --config=/dev/null

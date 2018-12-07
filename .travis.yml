@@ -16,7 +16,7 @@ install:
   - conda activate
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION 
+  - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION
   - conda activate test_env
   - conda config --append channels conda-forge
   - conda install qutip
@@ -26,6 +26,6 @@ install:
   - pip freeze
 
 script:
-  - pytest --doctest-modules --cov=newtonprop --nbval --sanitize-with docs/nbval_sanitize.cfg src tests docs/*.rst docs/*.ipynb
+  - NUMBA_DISABLE_JIT=1 pytest --doctest-modules --cov=newtonprop --nbval --sanitize-with docs/nbval_sanitize.cfg src tests docs/*.rst docs/example.ipynb
 after_success:
   - coveralls

@@ -116,12 +116,13 @@ html_short_title = '%s-%s' % (project, version)
 
 
 # Mathjax settings
+mathjax_path = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js'
 mathjax_config = {
-    'extensions': [
-        'tex2jax.js', 'AMSmath.js', 'AMSsymbols.js', 'noErrors.js',
-        'noUndefined.js'],
+    'extensions': ['tex2jax.js'],
     'jax': ['input/TeX', 'output/SVG'],
     'TeX': {
+        'extensions': [
+            "AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"],
         'Macros': {
             'tr': ['{\\operatorname{tr}}', 0],
             'diag': ['{\\operatorname{diag}}', 0],

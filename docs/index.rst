@@ -33,6 +33,7 @@ Welcome to the newtonprop's Python package's documentation!
    history
    newton
    example.ipynb
+   benchmarks.ipynb
 
 
 API

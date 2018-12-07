@@ -50,6 +50,21 @@ You can read the full documentation at `ReadTheDocs`_.
 .. _ODE solvers provided by SciPy: https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.integrate.ode.html
 
 
+Prerequisites
+-------------
+
+The `newtonprop` only depends on NumPy_. You may consider the use of QuTiP_ for
+efficient data structures for quantum states, operators, and super-operators
+(see the Example). As an optional dependency, having Numba_ installed when you
+import `newtonprop` can considerably speed up the propagation, assuming the
+application of the Hamiltonian/Liouvillian is implemented efficiently. Even
+then, though, the implementation will not approach C speed.
+
+.. _NumPy: http://www.numpy.org
+.. _Numba: http://numba.pydata.org
+.. _QuTiP: http://qutip.org
+
+
 Installation
 ------------
 
