@@ -96,7 +96,7 @@ except (git.exc.InvalidGitRepositoryError, ValueError):
     release = version
 numfig = True
 
-pygments_style = 'sphinx'
+pygments_style = 'friendly'
 extlinks = {
     'issue': ('https://github.com/qucontrol/newtonprop/issues/%s', '#'),
     'pr': ('https://github.com/qucontrol/newtonprop/pull/%s', 'PR #'),
