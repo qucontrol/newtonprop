@@ -78,20 +78,22 @@ test35: .venv/py35/bin/py.test ## run tests for Python 3.5
 	@.venv/py36/bin/pip install -e .[dev]
 
 test36: .venv/py36/bin/py.test ## run tests for Python 3.6
-	$(TESTENV) $< -v $(TESTOPTIONS) $(TESTS)
+	NUMBA_DISABLE_JIT=1 $(TESTENV) $< -v $(TESTOPTIONS) $(TESTS)
 
 .venv/py37/bin/py.test:
 	@conda create -y -m -p .venv/py37 python=3.7
+	@# if the conda installation does not work, simply comment out the following line, and let pip handle it
+	@conda install -y --override-channels -c defaults -c conda-forge -p .venv/py37 $(CONDA_PACKAGES)
 	@.venv/py37/bin/pip install -e .[dev]
 
 test37: .venv/py37/bin/py.test ## run tests for Python 3.7
-	$(TESTENV) $< -v $(TESTOPTIONS) src tests docs/*.rst
+	NUMBA_DISABLE_JIT=1 $(TESTENV) $< -v $(TESTOPTIONS) src tests $(TESTS)
 
 .venv/py36/bin/sphinx-build: .venv/py36/bin/py.test
 
 docs: .venv/py36/bin/sphinx-build ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs SPHINXBUILD=../.venv/py36/bin/sphinx-build clean
-	$(MAKE) -C docs SPHINXBUILD=../.venv/py36/bin/sphinx-build html
+	NUMBA_DISABLE_JIT=1 $(MAKE) -C docs SPHINXBUILD=../.venv/py36/bin/sphinx-build html
 	@echo "open docs/_build/html/index.html"
 
 spellcheck: .venv/py36/bin/sphinx-build ## check spelling in docs

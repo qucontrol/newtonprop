@@ -101,7 +101,7 @@ def _expmi(x):
 
 
 @jit(nopython=True)
-def _exppi(x):
+def _expi(x):
     return np.exp(1j * x)
 
 
@@ -220,8 +220,8 @@ def step(
             ``A(v)`` must return the result of applying $A$ to $v$.
         v: Initial state $v$.
         dt (float): scalar parameter (time step :math:`dt`)
-        func (callable or str): The scalar version of the operator-function $f$
-            to be evaluated. Must take one complex argument and return a
+        func (callable or str): The scalar version of the operator-function
+            $f$.  Must take one complex argument and return a
             complex value. Note that `func` will only ever be called with a
             scalar argument, not with the argument $(A\,dt)$.
             If passed as a string, `func` may have the following values,
@@ -231,10 +231,10 @@ def step(
             * ``'expmi'``: ``lambda x: np.exp(-1j * x)``
             * ``'expi'``: ``lambda x: np.exp(1j * x)``
 
-        m_max (int): Maximal Krylov dimension.
+        m_max (int): Maximal Krylov dimension
         maxrestart (int): Maximal number of Newton restarts (iterations of the
             algorithm)
-        tol (float): Desired precision of the result.
+        tol (float): Desired precision of the result
         inner (callable): Function that evaluates an inner product. Must take
             two arguments of the type of `v0` and return a complex number. If
             None, defaults to :func:`numpy.vdot`.
@@ -284,9 +284,6 @@ def step(
         A mismatch between `norm` and `inner` leads to subtle errors that will
         not be obvious (e.g., a substantial lack of precision)
     """
-
-    logger = logging.getLogger("newton")
-
     if inner is None:
         inner = np.vdot
         if norm is None:
@@ -299,16 +296,23 @@ def step(
     funcs = {
         'exp': _exp,
         'expmi': _expmi,
-        'expi': _exppi,
+        'expi': _expi,
     }
     if isinstance(func, str):
         func = funcs[func]
 
     try:
         N = np.prod(v.shape)
-        assert m_max <= N, "m_max must be smaller than the system dimension"
+        if m_max >= N:
+            raise ValueError("m_max must be smaller than the system dimension")
     except AttributeError:
         pass
+
+    return _step(A, v, dt, func, m_max, maxrestart, tol, inner, norm, zero)
+
+
+def _step(A, v, dt, func, m_max, maxrestart, tol, inner, norm, zero):
+    logger = logging.getLogger("newton")
 
     w = zero(v)  # result vector
     Z = np.zeros(0, dtype=np.complex128)  # Leja points
@@ -389,7 +393,7 @@ def step(
         except (AttributeError, TypeError):
             pass
 
-        if s == maxrestart - 1:
+        if s == maxrestart - 1:  # pragma: nocover
             logger.warn("DID NOT REACH CONVERGENCE")
             logger.warn("increase number of restarts")
 

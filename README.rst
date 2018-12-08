@@ -100,3 +100,7 @@ The ``newtonprop`` package exposes its functionality through a single function,
 accessible either as ``newtonprop.newton`` or ``newtonprop.propagator.step``::
 
     >>> from newtonprop import newton
+
+Especially for propagation under a time-dependent Hamiltonian or Liouvillian,
+it is recommended that you define a stateful propagator, see
+:mod:`newtonprop.interface`.
