@@ -210,7 +210,9 @@ Then, you can push master and delete the topic branch both locally and on Github
 Commit Message Guidelines
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Write commit messages according to this template::
+Write commit messages according to this template:
+
+.. code-block:: none
 
     Short (50 chars or less) summary
 
